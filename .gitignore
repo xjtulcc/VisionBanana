@@ -1,0 +1,47 @@
+
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Datasets
+datasets/
+data/raw/
+
+# Model weights
+*.ckpt
+*.safetensors
+*.pth
+*.pt
+*.onnx
+
+# Training outputs
+outputs/
+checkpoints/
+runs/
+logs/
+wandb/
+
+# Temporary files
+*.log
+tmp/
+temp/
+
+# Downloaded SDXL InstructPix2Pix model
+/models/sdxl-instructpix2pix/

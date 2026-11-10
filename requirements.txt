@@ -1,0 +1,36 @@
+
+# ==========================================
+# Vision Banana Reproduction
+# Environment: Windows / Python 3.11
+# ==========================================
+
+# Image processing
+numpy
+Pillow
+opencv-python
+matplotlib
+scipy
+
+# Data processing
+pandas
+datasets
+PyYAML
+
+# Deep Learning utilities
+tqdm
+safetensors
+accelerate
+
+# Hugging Face ecosystem
+diffusers
+transformers
+peft
+huggingface-hub
+
+# Training and visualization
+tensorboard
+ipykernel
+
+# Evaluation
+scikit-learn
+scikit-image
