@@ -8,6 +8,10 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
 
 # IDE settings
 .vscode/
@@ -30,6 +34,9 @@ data/raw/
 *.pth
 *.pt
 *.onnx
+*.bin
+*.h5
+*.hdf5
 
 # Training outputs
 outputs/
@@ -37,11 +44,17 @@ checkpoints/
 runs/
 logs/
 wandb/
+/results/
+.cache/
 
 # Temporary files
 *.log
 tmp/
 temp/
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
 
 # Downloaded SDXL InstructPix2Pix model
 /models/sdxl-instructpix2pix/
