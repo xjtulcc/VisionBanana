@@ -29,6 +29,7 @@ from transformers import (
 from data.semantic_instruction_dataset import (
     SemanticInstructionDataset,
 )
+from evaluation.training_logger import TrainingLogger
 from training.lora_config import (
     configure_unet_lora,
     print_trainable_parameters,
@@ -838,6 +839,7 @@ def main():
 
     args = parse_args()
 
+    logger = TrainingLogger(output_dir=Path(args.output_dir) / "training_logs")
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
 
@@ -999,6 +1001,9 @@ def main():
         unet.train()
 
         epoch_losses = []
+        # Track loss within gradient accumulation group.
+        accumulated_loss = 0.0
+        accumulated_batches = 0
 
         print(f"\nEpoch {epoch + 1}/{args.epochs}")
 
@@ -1027,8 +1032,13 @@ def main():
                     noise_scheduler,
                     args.resolution,
                 )
+            # Record raw diffusion loss before gradient scaling.
+            raw_loss = loss.detach().float().item()
 
-            epoch_losses.append(loss.item())
+            epoch_losses.append(raw_loss)
+
+            accumulated_loss += raw_loss
+            accumulated_batches += 1
 
             scaled_loss = loss / group_size
 
@@ -1060,6 +1070,24 @@ def main():
 
             global_step += 1
 
+            # --------------------------------------
+            # Log Training Metrics
+            # --------------------------------------
+
+            step_loss = accumulated_loss / accumulated_batches
+
+            current_lr = optimizer.param_groups[0]["lr"]
+
+            logger.log_train_step(
+                epoch=epoch + 1,
+                global_step=global_step,
+                train_loss=step_loss,
+                learning_rate=current_lr,
+            )
+
+            # Reset accumulation statistics.
+            accumulated_loss = 0.0
+            accumulated_batches = 0
             print(
                 f"Epoch: {epoch + 1} | "
                 f"Step: {global_step}/{total_steps} | "
@@ -1102,6 +1130,11 @@ def main():
             args.resolution,
         )
 
+        logger.log_validation(
+            epoch=epoch + 1,
+            global_step=global_step,
+            val_loss=validation_loss,
+        )
         print(f"Epoch {epoch + 1} Validation Loss: {validation_loss:.6f}")
 
         if stop_training:
